@@ -69,4 +69,10 @@ export const RectMethods: ShapeMethods = {
   hitTest(x: number, y: number, bound: IBound, options?: HitTestOptions) {
     return isPointIn(bound, x, y);
   },
+
+  // getNearestPoint(point: IVec, element: ShapeElement) {
+  //   const bound = Bound.deserialize(element.xywh)
+
+  //   return
+  // }
 };

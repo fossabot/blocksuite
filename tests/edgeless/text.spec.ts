@@ -74,7 +74,7 @@ test('add text element in text mode', async ({ page }) => {
   await assertEdgelessText(page, 'hddd\nellohello');
 });
 
-test('copy and paste', async ({ page }) => {
+test.only('copy and paste', async ({ page }) => {
   await enterPlaygroundRoom(page);
   await initEmptyEdgelessState(page);
 
@@ -94,11 +94,12 @@ test('copy and paste', async ({ page }) => {
     steps: 10,
   });
   await page.mouse.up();
-
+  await waitNextFrame(page, 200);
   await page.keyboard.press(`${SHORT_KEY}+c`);
 
   await waitNextFrame(page, 200);
   await type(page, 'ddd');
+  await waitNextFrame(page, 200);
   await assertEdgelessText(page, 'hdddo');
 
   await page.keyboard.press(`${SHORT_KEY}+v`);

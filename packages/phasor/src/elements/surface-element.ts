@@ -21,7 +21,11 @@ export interface HitTestOptions {
 
 export type ComputedValue = (value: string) => string;
 
-export class SurfaceElement<T extends ISurfaceElement = ISurfaceElement> {
+export abstract class SurfaceElement<
+  T extends ISurfaceElement = ISurfaceElement
+> {
+  // abstract getNearestPoint(point: IVec): IVec
+
   yMap: Y.Map<unknown>;
 
   protected renderer: Renderer | null = null;

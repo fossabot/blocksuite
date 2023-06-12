@@ -6,6 +6,9 @@ import { ShapeMethodsMap } from './shapes/index.js';
 import type { IShape } from './types.js';
 
 export class ShapeElement extends SurfaceElement<IShape> {
+  // override getNearestPoint(point: IVec): IVec {
+  // return ShapeMethodsMap[this.shapeType].getNearestPoint(point, this);
+  // }
   get shapeType() {
     const shapeType = this.yMap.get('shapeType') as IShape['shapeType'];
     return shapeType;

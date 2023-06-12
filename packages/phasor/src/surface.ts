@@ -64,13 +64,13 @@ export class SurfaceManager {
 
   private _updateBindings(element: SurfaceElement) {
     if (element instanceof ConnectorElement) {
-      if (element.startElement) {
-        this._addBinding(element.startElement.id, element.id);
-        this._addBinding(element.id, element.startElement.id);
+      if (element.target.id) {
+        this._addBinding(element.target.id, element.id);
+        this._addBinding(element.id, element.target.id);
       }
-      if (element.endElement) {
-        this._addBinding(element.endElement.id, element.id);
-        this._addBinding(element.id, element.endElement.id);
+      if (element.source.id) {
+        this._addBinding(element.source.id, element.id);
+        this._addBinding(element.id, element.source.id);
       }
     }
   }

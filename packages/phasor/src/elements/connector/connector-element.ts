@@ -1,3 +1,4 @@
+import { assertExists } from '@blocksuite/global/utils.js';
 import type { RoughCanvas } from 'roughjs/bin/canvas.js';
 
 import { DEFAULT_ROUGHNESS, StrokeStyle } from '../../consts.js';
@@ -6,6 +7,7 @@ import {
   inflateBound,
   transformPointsToNewBound,
 } from '../../utils/bound.js';
+import type { IVec } from '../../utils/vec.js';
 import { SurfaceElement } from '../surface-element.js';
 import type { IConnector } from './types.js';
 import { ConnectorMode } from './types.js';
@@ -16,12 +18,12 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
     return this.yMap.get('mode') as IConnector['mode'];
   }
 
-  get lineWidth() {
-    return this.yMap.get('lineWidth') as IConnector['lineWidth'];
+  get strokeWidth() {
+    return this.yMap.get('strokeWidth') as IConnector['strokeWidth'];
   }
 
-  get color() {
-    return this.yMap.get('color') as IConnector['color'];
+  get stroke() {
+    return this.yMap.get('stroke') as IConnector['stroke'];
   }
 
   get strokeStyle() {
@@ -35,22 +37,43 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
     );
   }
 
-  get startElement() {
-    return this.yMap.get('startElement') as IConnector['startElement'];
+  get target() {
+    return this.yMap.get('target') as IConnector['target'];
   }
 
-  get endElement() {
-    return this.yMap.get('endElement') as IConnector['endElement'];
+  get source() {
+    return this.yMap.get('source') as IConnector['source'];
   }
 
   get controllers() {
     return this.yMap.get('controllers') as IConnector['controllers'];
   }
 
+  private _getConnectionPoint(type: 'source' | 'target') {
+    const connection = this[type];
+    let point: IVec = [];
+    if (connection.id) {
+      const ele = this.surface?.pickById(connection.id);
+      assertExists(ele);
+      if (!connection.position) {
+        // point = ele.getNearestPoint(this)
+      } else {
+        point = Bound.deserialize(ele.xywh).getRelativePoint(
+          connection.position
+        );
+      }
+    } else {
+      point = connection.position as IVec;
+    }
+    return point;
+  }
+
   override render(ctx: CanvasRenderingContext2D, rc: RoughCanvas) {
-    const { seed, strokeStyle, color, roughness, lineWidth, controllers } =
+    const { seed, strokeStyle, stroke, roughness, strokeWidth, controllers } =
       this;
-    const realStrokeColor = this.computedValue(color);
+    const realStrokeColor = this.computedValue(stroke);
+
+    const sourcePoint: IVec = [];
 
     if (this.mode === ConnectorMode.Orthogonal) {
       rc.linearPath(
@@ -61,7 +84,7 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
           strokeLineDash:
             strokeStyle === StrokeStyle.Dashed ? [12, 12] : undefined,
           stroke: realStrokeColor,
-          strokeWidth: lineWidth,
+          strokeWidth,
         }
       );
     } else {
@@ -79,7 +102,7 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
           strokeLineDash:
             strokeStyle === StrokeStyle.Dashed ? [12, 12] : undefined,
           stroke: realStrokeColor,
-          strokeWidth: lineWidth,
+          strokeWidth,
         }
       );
     }
@@ -105,7 +128,7 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
         strokeLineDash:
           strokeStyle === StrokeStyle.Dashed ? [12, 12] : undefined,
         stroke: realStrokeColor,
-        strokeWidth: lineWidth,
+        strokeWidth,
       }
     );
   }
@@ -115,7 +138,7 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
 
     const { controllers, xywh } = props;
     if (controllers?.length) {
-      const lineWidth = props.lineWidth ?? this.lineWidth;
+      const lineWidth = props.strokeWidth ?? this.strokeWidth;
       const bound = getConnectorPointsBound(controllers);
       const boundWidthLineWidth = inflateBound(bound, lineWidth);
       const relativeControllers = controllers.map(c => {
@@ -130,34 +153,34 @@ export class ConnectorElement extends SurfaceElement<IConnector> {
     }
 
     if (xywh) {
-      const { lineWidth } = this;
+      const { strokeWidth } = this;
       const bound = Bound.deserialize(xywh);
       const transformed = transformPointsToNewBound(
         this.controllers,
         this,
-        lineWidth / 2,
+        strokeWidth / 2,
         bound,
-        lineWidth / 2
+        strokeWidth / 2
       );
 
       updates.controllers = transformed.points;
       updates.xywh = transformed.bound.serialize();
     }
 
-    if (props.lineWidth && props.lineWidth !== this.lineWidth) {
-      const bound = updates.xywh ? Bound.deserialize(updates.xywh) : this;
-      const controllers = updates.controllers ?? this.controllers;
-      const transformed = transformPointsToNewBound(
-        controllers,
-        bound,
-        this.lineWidth / 2,
-        inflateBound(bound, props.lineWidth - this.lineWidth),
-        props.lineWidth / 2
-      );
+    // if (props.strokeWidth && props.strokeWidth !== this.strokeWidth) {
+    //   const bound = updates.xywh ? Bound.deserialize(updates.xywh) : this;
+    //   const controllers = updates.controllers ?? this.controllers;
+    //   const transformed = transformPointsToNewBound(
+    //     controllers,
+    //     bound,
+    //     this.strokeWidth / 2,
+    //     inflateBound(bound, props.strokeWidth - this.strokeWidth),
+    //     props.strokeWidth / 2
+    //   );
 
-      updates.controllers = transformed.points;
-      updates.xywh = transformed.bound.serialize();
-    }
+    //   updates.controllers = transformed.points;
+    //   updates.xywh = transformed.bound.serialize();
+    // }
 
     for (const key in updates) {
       this.yMap.set(

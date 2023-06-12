@@ -37,4 +37,5 @@ export interface ShapeMethods {
     bound: IBound,
     options?: HitTestOptions
   ) => boolean;
+  // getNearestPoint:(point: IVec, element: ShapeElement) => IVec;
 }

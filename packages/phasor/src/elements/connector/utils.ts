@@ -35,3 +35,10 @@ export function getConnectorPointsBound(controllers: Controller[]) {
   const points = arrowPoints.sides.concat(controllers.map(c => [c.x, c.y]));
   return getBoundFromPoints(points);
 }
+
+// export function getConnectionPoint(position?: IVec ,bound?: Bound): IVec{
+//   if(!bound && position) return position
+//   if(bound && !position){
+
+//   }
+// }

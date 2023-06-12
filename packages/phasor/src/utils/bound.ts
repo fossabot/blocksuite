@@ -88,6 +88,10 @@ export class Bound implements IBound {
     );
   }
 
+  getRelativePoint([x, y]: IVec): IVec {
+    return [this.x + x * this.w, this.y + y * this.h];
+  }
+
   serialize(): SerializedXYWH {
     return serializeXYWH(this.x, this.y, this.w, this.h);
   }
