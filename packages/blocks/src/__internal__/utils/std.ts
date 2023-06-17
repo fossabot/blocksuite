@@ -10,7 +10,7 @@ export function supportsChildren(model: BaseBlockModel): boolean {
   if (
     matchFlavours(model, [
       // 'affine:database',
-      'affine:embed',
+      'affine:image',
       'affine:divider',
       'affine:code',
     ])
@@ -33,7 +33,10 @@ export function isEmpty(model: BaseBlockModel): boolean {
     return !found;
   }
   return (
-    !model.text?.length && !model.sourceId && model.flavour !== 'affine:code'
+    !model.text?.length &&
+    !model.sourceId &&
+    model.flavour !== 'affine:code' &&
+    model.flavour !== 'affine:bookmark'
   );
 }
 

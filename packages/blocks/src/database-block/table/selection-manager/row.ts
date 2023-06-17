@@ -122,6 +122,7 @@ export class RowSelectionManager {
   };
 
   private _onPointerUp = (ctx: UIEventStateContext) => {
+    this._startCell = null;
     this._startRange = null;
     this._setColumnWidthHandleDisplay('block');
     return true;

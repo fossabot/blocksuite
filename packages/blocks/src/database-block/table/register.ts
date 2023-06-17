@@ -1,3 +1,4 @@
+import type { BlockSuiteRoot } from '@blocksuite/lit';
 import { ShadowlessElement, WithDisposable } from '@blocksuite/lit';
 import { property } from 'lit/decorators.js';
 import type { literal } from 'lit/static-html.js';
