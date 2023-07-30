@@ -34,14 +34,23 @@ export function ListIcon(
     }
   })();
 
+  if (model.type === 'todo') {
+    return html`
+      <div
+        class="affine-list-block__prefix affine-list-block__todo-prefix"
+        @click=${onClick}
+      >
+        <div class="affine-list-block__todo-checked-prefix"></div>
+        ${icon}
+      </div>
+    `;
+  }
+
   return html`
     <div
-      class="affine-list-block__prefix ${model.type === 'todo'
-        ? 'affine-list-block__todo-prefix'
-        : ''}"
+      class="affine-list-block__prefix"
       @click="${(e: MouseEvent) => onClick(e)}"
     >
-      <div class="affine-list-block__todo-checked-prefix"></div>
       ${icon}
     </div>
   `;

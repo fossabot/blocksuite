@@ -19,6 +19,7 @@ import type { ListBlockModel } from './list-model.js';
 import { ListBlockService } from './list-service.js';
 import { ListIcon } from './utils/get-list-icon.js';
 import { getListInfo } from './utils/get-list-info.js';
+import { toggleDown, toggleRight } from './utils/icons.js';
 
 @customElement('affine-list')
 export class ListBlockComponent extends BlockElement<ListBlockModel> {
@@ -37,6 +38,7 @@ export class ListBlockComponent extends BlockElement<ListBlockModel> {
       background-color: var(--affine-hover-color);
     }
     .affine-list-rich-text-wrapper {
+      position: relative;
       display: flex;
       align-items: center;
     }
@@ -110,6 +112,22 @@ export class ListBlockComponent extends BlockElement<ListBlockModel> {
           -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
       }
     }
+
+    .toggle-icon {
+      position: absolute;
+      left: 0;
+      transform: translateX(-100%);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    .affine-list-block-container:hover .toggle-icon {
+      opacity: 1;
+    }
+
+    .toggle-icon__collapsed {
+      opacity: 1;
+    }
   `;
 
   @state()
@@ -159,6 +177,21 @@ export class ListBlockComponent extends BlockElement<ListBlockModel> {
     const listIcon = ListIcon(model, index, deep, showChildren, _onClickIcon);
     const selected = this.selected?.is('block') ? 'selected' : '';
 
+    const toggleChildren = () => (this.showChildren = !this.showChildren);
+    const toggleIcon =
+      this.model.children.length > 0
+        ? this.showChildren
+          ? html`<div class="toggle-icon" @click=${toggleChildren}>
+              ${toggleDown()}
+            </div>`
+          : html`<div
+              class="toggle-icon toggle-icon__collapsed"
+              @click=${toggleChildren}
+            >
+              ${toggleRight()}
+            </div>`
+        : nothing;
+
     // For the first list item, we need to add a margin-top to make it align with the text
     const shouldAddMarginTop = index === 0 && deep === 0;
     const top = shouldAddMarginTop ? 'affine-list-block-container--first' : '';
@@ -177,7 +210,7 @@ export class ListBlockComponent extends BlockElement<ListBlockModel> {
             this.model.checked ? 'affine-list--checked' : ''
           }`}
         >
-          ${listIcon}
+          ${toggleIcon} ${listIcon}
           <rich-text
             .model=${this.model}
             .textSchema=${this.textSchema}
